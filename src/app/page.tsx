@@ -1,7 +1,6 @@
-// src/app/page.tsx
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 
 interface Character {
   name: string;
@@ -104,16 +103,8 @@ export default function Home() {
   const [loading, setLoading] = useState(false);
   const [story, setStory] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [landscape, setLandscape] = useState(false);
 
   const t = placeholderConfig[language];
-
-  useEffect(() => {
-    const check = () => setLandscape(window.innerWidth > window.innerHeight);
-    check();
-    window.addEventListener('resize', check);
-    return () => window.removeEventListener('resize', check);
-  }, []);
 
   const generateLabel = () => {
     const mainCharacter = characters.find((c) => c.name)?.name;
@@ -145,11 +136,24 @@ export default function Home() {
       const response = await fetch('/api/generate', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ language, characters, audience, elements, synopsis, moral, style, authorStyle }),
+        body: JSON.stringify({
+          language,
+          characters,
+          audience,
+          elements,
+          synopsis,
+          moral,
+          style,
+          authorStyle,
+        }),
       });
+
       const data = await response.json();
-      if (data.story) setStory(data.story);
-      else setError('Er ging iets mis. Probeer het opnieuw.');
+      if (data.story) {
+        setStory(data.story);
+      } else {
+        setError('Er ging iets mis. Probeer het opnieuw.');
+      }
     } catch (err) {
       console.error(err);
       setError('Er ging iets mis. Probeer het opnieuw.');
@@ -161,7 +165,7 @@ export default function Home() {
   return (
     <main
       className="min-h-screen bg-cover bg-center text-white"
-      style={{ backgroundImage: `url(${landscape ? '/backgroundls.png' : '/background.png'})` }}
+      style={{ backgroundImage: `url(${typeof window !== 'undefined' && window.innerWidth > window.innerHeight ? '/backgroundls.png' : '/background.png'})` }}
     >
       <div className="relative max-w-3xl mx-auto px-6 pt-8 pb-24 backdrop-blur-sm bg-white/70 rounded-xl mt-8 shadow-xl">
         <div className="flex items-center gap-4 mb-4">
@@ -174,11 +178,6 @@ export default function Home() {
           </div>
         </div>
 
-        {/* taalkeuze en knop */}
-        <div className="flex gap-2 mb-6">
-          <button onClick={() => setLanguage('nl')} className="px-4 py-1 bg-white text-black rounded">Nederlands</button>
-          <button onClick={() => setLanguage('en')} className="px-4 py-1 bg-white text-black rounded">English</button>
-        </div>
 
         <button
           onClick={handleSubmit}
@@ -188,10 +187,106 @@ export default function Home() {
           {generateLabel()}
         </button>
 
-        {loading && <p className="italic">Even geduld... het verhaaltje wordt geschreven...</p>}
-        {error && <p className="text-red-300">{error}</p>}
+        {/* Characters */}
+        <details className="mb-4">
+          <summary className="font-semibold cursor-pointer">{t.character.label}</summary>
+          <p className="mt-2 text-sm text-gray-300">{t.character.helper}</p>
+          {characters.map((char, idx) => (
+            <div key={idx} className="mb-4 border-b border-gray-600 pb-2 mt-2">
+              {(['name', 'age', 'gender', 'description', 'quirks'] as (keyof Character)[]).map((field) => (
+                <input
+                  key={field}
+                  type="text"
+                  placeholder={t.character[field]}
+                  value={char[field]}
+                  onChange={(e) => handleCharacterChange(idx, field, e.target.value)}
+                  className="block w-full mb-2 p-2 rounded text-black"
+                />
+              ))}
+            </div>
+          ))}
+          <button onClick={handleAddCharacter} className="px-4 py-2 bg-blue-600 rounded">
+            + {t.character.label}
+          </button>
+        </details>
 
-        {/* boek overlay */}
+        {/* Audience */}
+        <details className="mb-4">
+          <summary className="font-semibold cursor-pointer">{t.audience.label}</summary>
+          <p className="mt-2 text-sm text-gray-300">{t.audience.helper}</p>
+          <textarea
+            placeholder={t.audience.placeholder}
+            value={audience}
+            onChange={(e) => setAudience(e.target.value)}
+            className="block w-full mt-2 p-2 rounded text-black"
+          />
+        </details>
+
+        {/* Synopsis */}
+        <details className="mb-4">
+          <summary className="font-semibold cursor-pointer">{t.synopsis.label}</summary>
+          <p className="mt-2 text-sm text-gray-300">{t.synopsis.helper}</p>
+          <textarea
+            placeholder={t.synopsis.placeholder}
+            value={synopsis}
+            onChange={(e) => setSynopsis(e.target.value)}
+            className="block w-full mt-2 p-2 rounded text-black"
+          />
+        </details>
+
+        {/* Elements */}
+        <details className="mb-4">
+          <summary className="font-semibold cursor-pointer">{t.elements.label}</summary>
+          <p className="mt-2 text-sm text-gray-300">{t.elements.helper}</p>
+          <textarea
+            placeholder={t.elements.placeholder}
+            value={elements}
+            onChange={(e) => setElements(e.target.value)}
+            className="block w-full mt-2 p-2 rounded text-black"
+          />
+        </details>
+
+        {/* Moral */}
+        <details className="mb-4">
+          <summary className="font-semibold cursor-pointer">{t.moral.label}</summary>
+          <p className="mt-2 text-sm text-gray-300">{t.moral.helper}</p>
+          <textarea
+            placeholder={t.moral.placeholder}
+            value={moral}
+            onChange={(e) => setMoral(e.target.value)}
+            className="block w-full mt-2 p-2 rounded text-black"
+          />
+        </details>
+
+        {/* Style */}
+        <details className="mb-4">
+          <summary className="font-semibold cursor-pointer">Stijl</summary>
+          <div className="mt-2">
+            {Object.entries(style).map(([key, value]) => (
+              <div key={key} className="mb-2">
+                <label className="block capitalize">{key}</label>
+                <input
+                  type="range"
+                  min={0}
+                  max={5}
+                  value={value}
+                  onChange={(e) => handleSliderChange(key as keyof StyleSettings, parseInt(e.target.value))}
+                  className="w-full"
+                />
+              </div>
+            ))}
+            <input
+              type="text"
+              placeholder="In de stijl van (bijv: Annie M.G. Schmidt)"
+              value={authorStyle}
+              onChange={(e) => setAuthorStyle(e.target.value)}
+              className="block w-full mt-4 p-2 rounded text-black"
+            />
+          </div>
+        </details>
+
+        {loading && <p className="mt-4 italic">Even geduld... het verhaaltje wordt geschreven...</p>}
+        {error && <p className="mt-4 text-red-300">{error}</p>}
         {story && (
           <div className="mt-6 relative w-full max-w-4xl mx-auto">
             <img src="/book.png" alt="Boek" className="w-full h-auto" />
@@ -203,7 +298,8 @@ export default function Home() {
             </div>
           </div>
         )}
-      </div>
+      </div> {/* sluit het interfaceblok af */}
     </main>
   );
 }
+
