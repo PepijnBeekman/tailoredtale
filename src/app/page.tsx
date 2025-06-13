@@ -19,6 +19,71 @@ interface StyleSettings {
   inspirerend: number;
 }
 
+const placeholderConfig = {
+  nl: {
+    audience: {
+      label: 'Voor wie is dit verhaaltje bedoeld?',
+      helper: 'Vertel hier iets over degene voor wie het verhaaltje bedoeld is.',
+      placeholder: 'Bijv: een jongen van 7 die van draken houdt',
+    },
+    synopsis: {
+      label: 'Hier moet het over gaan:',
+      helper: 'Geef in 1-2 zinnen aan wat er in grote lijnen moet gebeuren.',
+      placeholder: 'Bijv: een prinses die leert om zelf haar problemen op te lossen',
+    },
+    moral: {
+      label: 'De boodschap moet zijn dat:',
+      helper: 'Welke les of inzicht moet de lezer meekrijgen?',
+      placeholder: 'Bijv: samenwerken loont altijd',
+    },
+    elements: {
+      label: 'Dit moet in verhaaltje voorkomen:',
+      helper: 'Noem losse elementen, dingen, wezens of gebeurtenissen.',
+      placeholder: 'Bijv: een eenhoorn, een regenboog, oma was jarig die dag',
+    },
+    character: {
+      label: 'Personage',
+      helper: 'Beschrijf een personage in het verhaal',
+      name: 'Naam (bijv: Hugo)',
+      age: 'Leeftijd (bijv: 5)',
+      gender: 'Geslacht (bijv: jongen)',
+      description: 'Korte beschrijving (bijv: nieuwsgierig en slim)',
+      quirks: 'Opmerkelijkheden (bijv: wiebelt met z’n tenen als hij nadenkt)',
+    },
+  },
+  en: {
+    audience: {
+      label: 'Who is this story intended for?',
+      helper: 'Tell us something about the listener or reader of this tale.',
+      placeholder: 'E.g.: a 7-year-old boy who loves dragons',
+    },
+    synopsis: {
+      label: 'The story should be about:',
+      helper: 'Describe in 1–2 sentences what should broadly happen.',
+      placeholder: 'E.g.: a princess who learns to solve problems herself',
+    },
+    moral: {
+      label: 'The message should be:',
+      helper: 'What lesson or insight should the listener take away?',
+      placeholder: 'E.g.: teamwork always pays off',
+    },
+    elements: {
+      label: 'These elements must be included in the tale:',
+      helper: 'List things, creatures, or events to include.',
+      placeholder: 'E.g.: a unicorn, a rainbow, and a cookie storm',
+    },
+    character: {
+      label: 'Character',
+      helper: 'Describe a character in the tale',
+      name: 'Name (e.g.: Hugo)',
+      age: 'Age (e.g.: 5)',
+      gender: 'Gender (e.g.: boy)',
+      description: 'Short description (e.g.: curious and clever)',
+      quirks: 'Quirks (e.g.: wiggles his toes when thinking)',
+    },
+  },
+};
+
 export default function Home() {
   const [language, setLanguage] = useState<'nl' | 'en'>('nl');
   const [characters, setCharacters] = useState<Character[]>([{ name: '', age: '', gender: '', description: '', quirks: '' }]);
@@ -39,48 +104,15 @@ export default function Home() {
   const [story, setStory] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  const labels = {
-    nl: {
-      title: 'Bedtijdverhaaltjes',
-      intro: 'Deze verhaaltjes zijn helemaal naar wens aan te passen. Laat alles leeg voor een verrassend willekeurig verhaaltje, of pas aan wat jij belangrijk vindt.',
-      addCharacter: 'Voeg personage toe',
-      name: 'Naam',
-      age: 'Leeftijd',
-      gender: 'Geslacht',
-      description: 'Omschrijving',
-      quirks: 'Opmerkelijkheden',
-      audience: 'Voor wie is dit verhaaltje bedoeld?',
-      elements: 'Dit moet er in voorkomen:',
-      synopsis: 'Hier moet het over gaan:',
-      moral: 'De boodschap moet zijn dat:',
-      style: 'Stijl',
-      inStyleOf: 'In de stijl van:',
-      generate: 'Genereer verhaaltje',
-      loading: 'Even geduld... het verhaaltje wordt geschreven...',
-      error: 'Er ging iets mis. Probeer het opnieuw.',
-    },
-    en: {
-      title: 'Bedtime Stories',
-      intro: 'These stories are fully customizable. Leave everything blank for a surprising random story, or tweak the parts that matter to you.',
-      addCharacter: 'Add character',
-      name: 'Name',
-      age: 'Age',
-      gender: 'Gender',
-      description: 'Description',
-      quirks: 'Quirks',
-      audience: 'Who is this story intended for?',
-      elements: 'These elements must be included:',
-      synopsis: 'The story should be about:',
-      moral: 'The message should be:',
-      style: 'Style',
-      inStyleOf: 'In the style of:',
-      generate: 'Generate story',
-      loading: 'Please wait... your story is being written...',
-      error: 'Something went wrong. Please try again.',
-    },
-  };
+  const t = placeholderConfig[language];
 
-  const l = labels[language];
+  const generateLabel = () => {
+    const mainCharacter = characters.find((c) => c.name)?.name;
+    if (mainCharacter) return `Genereer verhaaltje over ${mainCharacter}`;
+    if (audience) return `Genereer verhaaltje voor ${audience}`;
+    if (synopsis) return `Genereer verhaaltje over ${synopsis}`;
+    return 'Genereer willekeurig verhaaltje';
+  };
 
   const handleAddCharacter = () => {
     setCharacters([...characters, { name: '', age: '', gender: '', description: '', quirks: '' }]);
@@ -94,14 +126,6 @@ export default function Home() {
 
   const handleSliderChange = (field: keyof StyleSettings, value: number) => {
     setStyle({ ...style, [field]: value });
-  };
-
-  const generateLabel = () => {
-    const mainCharacter = characters.find((c) => c.name)?.name;
-    if (mainCharacter) return `${l.generate} over ${mainCharacter}`;
-    if (audience) return `${l.generate} voor ${audience}`;
-    if (synopsis) return `${l.generate} over ${synopsis}`;
-    return `${l.generate} (willekeurig)`;
   };
 
   const handleSubmit = async () => {
@@ -128,11 +152,11 @@ export default function Home() {
       if (data.story) {
         setStory(data.story);
       } else {
-        setError(l.error);
+        setError('Er ging iets mis. Probeer het opnieuw.');
       }
     } catch (err) {
       console.error(err);
-      setError(l.error);
+      setError('Er ging iets mis. Probeer het opnieuw.');
     } finally {
       setLoading(false);
     }
@@ -141,16 +165,15 @@ export default function Home() {
   return (
     <main className="min-h-screen bg-gray-900 text-white p-6">
       <div className="max-w-3xl mx-auto bg-gray-800 p-6 rounded-xl shadow">
-        <h1 className="text-3xl font-bold mb-2">{l.title}</h1>
-        <p className="mb-6 italic">{l.intro}</p>
+        <h1 className="text-3xl font-bold mb-4">Bedtijdverhaaltjes</h1>
+
+        <p className="mb-6 italic">
+          Deze verhaaltjes zijn helemaal naar wens aan te passen. Laat alles leeg voor een verrassend willekeurig verhaaltje, of pas aan wat jij belangrijk vindt.
+        </p>
 
         <div className="flex gap-2 mb-6">
-          <button onClick={() => setLanguage('nl')} className="px-4 py-1 bg-white text-black rounded">
-            Nederlands
-          </button>
-          <button onClick={() => setLanguage('en')} className="px-4 py-1 bg-white text-black rounded">
-            English
-          </button>
+          <button onClick={() => setLanguage('nl')} className="px-4 py-1 bg-white text-black rounded">Nederlands</button>
+          <button onClick={() => setLanguage('en')} className="px-4 py-1 bg-white text-black rounded">English</button>
         </div>
 
         <button
@@ -161,16 +184,17 @@ export default function Home() {
           {generateLabel()}
         </button>
 
+        {/* Characters */}
         <details className="mb-4">
-          <summary className="font-semibold cursor-pointer">{l.addCharacter}</summary>
+          <summary className="font-semibold cursor-pointer">{t.character.label}</summary>
+          <p className="mt-2 text-sm text-gray-300">{t.character.helper}</p>
           {characters.map((char, idx) => (
             <div key={idx} className="mb-4 border-b border-gray-600 pb-2 mt-2">
-              <h2 className="font-semibold mb-2">{l.addCharacter} {idx + 1}</h2>
               {(['name', 'age', 'gender', 'description', 'quirks'] as (keyof Character)[]).map((field) => (
                 <input
                   key={field}
                   type="text"
-                  placeholder={l[field]}
+                  placeholder={t.character[field]}
                   value={char[field]}
                   onChange={(e) => handleCharacterChange(idx, field, e.target.value)}
                   className="block w-full mb-2 p-2 rounded text-black"
@@ -179,52 +203,61 @@ export default function Home() {
             </div>
           ))}
           <button onClick={handleAddCharacter} className="px-4 py-2 bg-blue-600 rounded">
-            + {l.addCharacter}
+            + {t.character.label}
           </button>
         </details>
 
+        {/* Audience */}
         <details className="mb-4">
-          <summary className="font-semibold cursor-pointer">{l.audience}</summary>
+          <summary className="font-semibold cursor-pointer">{t.audience.label}</summary>
+          <p className="mt-2 text-sm text-gray-300">{t.audience.helper}</p>
           <textarea
-            placeholder={l.audience}
+            placeholder={t.audience.placeholder}
             value={audience}
             onChange={(e) => setAudience(e.target.value)}
             className="block w-full mt-2 p-2 rounded text-black"
           />
         </details>
 
+        {/* Synopsis */}
         <details className="mb-4">
-          <summary className="font-semibold cursor-pointer">{l.synopsis}</summary>
+          <summary className="font-semibold cursor-pointer">{t.synopsis.label}</summary>
+          <p className="mt-2 text-sm text-gray-300">{t.synopsis.helper}</p>
           <textarea
-            placeholder={l.synopsis}
+            placeholder={t.synopsis.placeholder}
             value={synopsis}
             onChange={(e) => setSynopsis(e.target.value)}
             className="block w-full mt-2 p-2 rounded text-black"
           />
         </details>
 
+        {/* Elements */}
         <details className="mb-4">
-          <summary className="font-semibold cursor-pointer">{l.elements}</summary>
+          <summary className="font-semibold cursor-pointer">{t.elements.label}</summary>
+          <p className="mt-2 text-sm text-gray-300">{t.elements.helper}</p>
           <textarea
-            placeholder={l.elements}
+            placeholder={t.elements.placeholder}
             value={elements}
             onChange={(e) => setElements(e.target.value)}
             className="block w-full mt-2 p-2 rounded text-black"
           />
         </details>
 
+        {/* Moral */}
         <details className="mb-4">
-          <summary className="font-semibold cursor-pointer">{l.moral}</summary>
+          <summary className="font-semibold cursor-pointer">{t.moral.label}</summary>
+          <p className="mt-2 text-sm text-gray-300">{t.moral.helper}</p>
           <textarea
-            placeholder={l.moral}
+            placeholder={t.moral.placeholder}
             value={moral}
             onChange={(e) => setMoral(e.target.value)}
             className="block w-full mt-2 p-2 rounded text-black"
           />
         </details>
 
+        {/* Style */}
         <details className="mb-4">
-          <summary className="font-semibold cursor-pointer">{l.style}</summary>
+          <summary className="font-semibold cursor-pointer">Stijl</summary>
           <div className="mt-2">
             {Object.entries(style).map(([key, value]) => (
               <div key={key} className="mb-2">
@@ -241,7 +274,7 @@ export default function Home() {
             ))}
             <input
               type="text"
-              placeholder={l.inStyleOf}
+              placeholder="In de stijl van (bijv: Annie M.G. Schmidt)"
               value={authorStyle}
               onChange={(e) => setAuthorStyle(e.target.value)}
               className="block w-full mt-4 p-2 rounded text-black"
@@ -249,7 +282,7 @@ export default function Home() {
           </div>
         </details>
 
-        {loading && <p className="mt-4 italic">{l.loading}</p>}
+        {loading && <p className="mt-4 italic">Even geduld... het verhaaltje wordt geschreven...</p>}
         {error && <p className="mt-4 text-red-300">{error}</p>}
         {story && (
           <div className="mt-6 p-4 bg-white text-black rounded shadow max-h-[500px] overflow-auto whitespace-pre-wrap">
