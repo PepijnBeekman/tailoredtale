@@ -1,11 +1,38 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-export const runtime = 'edge'; // snellere cold starts op Vercel
+export const runtime = 'edge';
+
+type Character = {
+  name: string;
+  age: string;
+  gender: string;
+  description: string;
+  quirks: string;
+};
+
+type StyleSettings = {
+  spannend: number;
+  grappig: number;
+  absurd: number;
+  leerzaam: number;
+  avontuurlijk: number;
+  inspirerend: number;
+};
+
+interface PromptInput {
+  language: 'nl' | 'en';
+  characters: Character[];
+  audience: string;
+  elements: string;
+  synopsis: string;
+  moral: string;
+  style: StyleSettings;
+  authorStyle: string;
+}
 
 export async function POST(req: NextRequest) {
   try {
-    const body = await req.json();
-
+    const body: PromptInput = await req.json();
     const prompt = buildPrompt(body);
 
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
@@ -35,34 +62,28 @@ export async function POST(req: NextRequest) {
   }
 }
 
-function buildPrompt({
-  language,
-  characters,
-  audience,
-  elements,
-  synopsis,
-  moral,
-  style,
-  authorStyle,
-}: any): string {
-  const charDescriptions = characters.map((c: any, i: number) =>
-    `Personage ${i + 1}: ${c.name}, ${c.age} jaar, ${c.gender}, ${c.description}, opvallend: ${c.quirks}.`).join('\n');
+function buildPrompt(data: PromptInput): string {
+  const charDescriptions = data.characters.map((c, i) =>
+    `Personage ${i + 1}: ${c.name}, ${c.age} jaar, ${c.gender}, ${c.description}, opvallend: ${c.quirks}.`
+  ).join('\n');
 
-  const sliders = Object.entries(style)
+  const sliders = Object.entries(data.style)
     .map(([k, v]) => `${k}: ${v}/5`)
     .join(', ');
 
-  const langIntro = language === 'nl' ? 'Schrijf een leuk, origineel Nederlandstalig voorleesverhaaltje.' : 'Write a fun and original bedtime story in English.';
+  const langIntro = data.language === 'nl'
+    ? 'Schrijf een leuk, origineel Nederlandstalig voorleesverhaaltje.'
+    : 'Write a fun and original bedtime story in English.';
 
   return `
 ${langIntro}
-Publiek: ${audience}
+Publiek: ${data.audience}
 ${charDescriptions}
 
-Synopsis: ${synopsis}
-Elementen die erin moeten: ${elements}
-Boodschap: ${moral}
+Synopsis: ${data.synopsis}
+Elementen die erin moeten: ${data.elements}
+Boodschap: ${data.moral}
 Stijl: ${sliders}
-In de stijl van: ${authorStyle || '(geen voorkeur)'}
+In de stijl van: ${data.authorStyle || '(geen voorkeur)'}
 `;
 }
