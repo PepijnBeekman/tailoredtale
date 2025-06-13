@@ -23,5 +23,9 @@ body {
 
 /* Optional: utility class for story text */
 .story-font {
-  font-family: var(--font-story);
+  font-family: var(--font-story), serif;
+  letter-spacing: 0.02em;
+  line-height: 1.75;
 }
+
+

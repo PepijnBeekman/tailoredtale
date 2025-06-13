@@ -164,14 +164,19 @@ export default function Home() {
 
   return (
     <main
-      className="min-h-screen bg-cover bg-center text-white"
+      className="min-h-screen bg-fixed bg-cover bg-top text-black"
       style={{ backgroundImage: `url(${typeof window !== 'undefined' && window.innerWidth > window.innerHeight ? '/backgroundls.png' : '/background.png'})` }}
     >
-      <div className="relative max-w-3xl mx-auto px-6 pt-8 pb-24 backdrop-blur-sm bg-white/70 rounded-xl mt-8 shadow-xl">
+      <div className="relative max-w-3xl mx-auto px-6 pt-8 pb-24 backdrop-blur-sm bg-white/50 rounded-xl mt-8 shadow-xl">
         <div className="flex items-center gap-4 mb-4">
-          <img src="/logo.png" alt="Logo" className="h-12 w-12 object-contain" />
+          <img src="/logo.png" alt="Logo" className="h-32 w-32 object-contain" />
           <div>
-            <h1 className="text-3xl font-bold">Bedtijdverhaaltjes</h1>
+            <h1 className="text-2xl font-bold">
+              {language === 'nl'
+                ? 'Genereer je eigen op maat gemaakte verhaaltjes met AI'
+                : 'Generate your tailormade tales with AI'}
+            </h1>
+
             <p className="text-sm italic text-gray-700">
               Deze verhaaltjes zijn helemaal naar wens aan te passen. Laat alles leeg voor een verrassend willekeurig verhaaltje, of pas aan wat jij belangrijk vindt.
             </p>
@@ -296,7 +301,7 @@ export default function Home() {
           <div className="mt-6 relative w-full max-w-4xl mx-auto">
             <img src="/book.png" alt="Boek" className="w-full h-auto" />
             <div
-              className="absolute top-[13%] left-[10%] w-[40%] h-[74%] overflow-y-auto p-4 text-black whitespace-pre-wrap text-lg font-[var(--font-story)]"
+              className="absolute top-[13%] left-[10%] w-[40%] h-[74%] overflow-y-auto p-4 text-black whitespace-pre-wrap text-lg story-font"
               style={{ background: 'rgba(255,255,255,0.6)', borderRadius: '0.5rem' }}
             >
               {story}
