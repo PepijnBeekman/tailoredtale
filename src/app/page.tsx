@@ -177,6 +177,11 @@ export default function Home() {
             </p>
           </div>
         </div>
+      
+      <div className="flex gap-2 mb-6">
+        <button onClick={() => setLanguage('nl')} className="px-4 py-1 bg-white text-black rounded">Nederlands</button>
+        <button onClick={() => setLanguage('en')} className="px-4 py-1 bg-white text-black rounded">English</button>
+      </div>
 
 
         <button
