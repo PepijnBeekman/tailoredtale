@@ -42,6 +42,7 @@ export default function Home() {
   const labels = {
     nl: {
       title: 'Bedtijdverhaaltjes',
+      intro: 'Deze verhaaltjes zijn helemaal naar wens aan te passen. Laat alles leeg voor een verrassend willekeurig verhaaltje, of pas aan wat jij belangrijk vindt.',
       addCharacter: 'Voeg personage toe',
       name: 'Naam',
       age: 'Leeftijd',
@@ -54,12 +55,13 @@ export default function Home() {
       moral: 'De boodschap moet zijn dat:',
       style: 'Stijl',
       inStyleOf: 'In de stijl van:',
-      generate: 'Genereer Verhaaltje',
+      generate: 'Genereer verhaaltje',
       loading: 'Even geduld... het verhaaltje wordt geschreven...',
       error: 'Er ging iets mis. Probeer het opnieuw.',
     },
     en: {
       title: 'Bedtime Stories',
+      intro: 'These stories are fully customizable. Leave everything blank for a surprising random story, or tweak the parts that matter to you.',
       addCharacter: 'Add character',
       name: 'Name',
       age: 'Age',
@@ -72,7 +74,7 @@ export default function Home() {
       moral: 'The message should be:',
       style: 'Style',
       inStyleOf: 'In the style of:',
-      generate: 'Generate Story',
+      generate: 'Generate story',
       loading: 'Please wait... your story is being written...',
       error: 'Something went wrong. Please try again.',
     },
@@ -92,6 +94,14 @@ export default function Home() {
 
   const handleSliderChange = (field: keyof StyleSettings, value: number) => {
     setStyle({ ...style, [field]: value });
+  };
+
+  const generateLabel = () => {
+    const mainCharacter = characters.find((c) => c.name)?.name;
+    if (mainCharacter) return `${l.generate} over ${mainCharacter}`;
+    if (audience) return `${l.generate} voor ${audience}`;
+    if (synopsis) return `${l.generate} over ${synopsis}`;
+    return `${l.generate} (willekeurig)`;
   };
 
   const handleSubmit = async () => {
@@ -131,9 +141,10 @@ export default function Home() {
   return (
     <main className="min-h-screen bg-gray-900 text-white p-6">
       <div className="max-w-3xl mx-auto bg-gray-800 p-6 rounded-xl shadow">
-        <h1 className="text-3xl font-bold mb-4">{l.title}</h1>
+        <h1 className="text-3xl font-bold mb-2">{l.title}</h1>
+        <p className="mb-6 italic">{l.intro}</p>
 
-        <div className="flex gap-2 mb-4">
+        <div className="flex gap-2 mb-6">
           <button onClick={() => setLanguage('nl')} className="px-4 py-1 bg-white text-black rounded">
             Nederlands
           </button>
@@ -142,81 +153,101 @@ export default function Home() {
           </button>
         </div>
 
-        {characters.map((char, idx) => (
-          <div key={idx} className="mb-4 border-b border-gray-600 pb-2">
-            <h2 className="font-semibold mb-2">{l.addCharacter} {idx + 1}</h2>
-            {(['name', 'age', 'gender', 'description', 'quirks'] as (keyof Character)[]).map((field) => (
-              <input
-                key={field}
-                type="text"
-                placeholder={l[field]}
-                value={char[field]}
-                onChange={(e) => handleCharacterChange(idx, field, e.target.value)}
-                className="block w-full mb-2 p-2 rounded text-black"
-              />
-            ))}
-          </div>
-        ))}
-
-        <button onClick={handleAddCharacter} className="mb-4 px-4 py-2 bg-blue-600 rounded">
-          + {l.addCharacter}
-        </button>
-
-        <textarea
-          placeholder={l.audience}
-          value={audience}
-          onChange={(e) => setAudience(e.target.value)}
-          className="block w-full mb-4 p-2 rounded text-black"
-        />
-        <textarea
-          placeholder={l.elements}
-          value={elements}
-          onChange={(e) => setElements(e.target.value)}
-          className="block w-full mb-4 p-2 rounded text-black"
-        />
-        <textarea
-          placeholder={l.synopsis}
-          value={synopsis}
-          onChange={(e) => setSynopsis(e.target.value)}
-          className="block w-full mb-4 p-2 rounded text-black"
-        />
-        <textarea
-          placeholder={l.moral}
-          value={moral}
-          onChange={(e) => setMoral(e.target.value)}
-          className="block w-full mb-4 p-2 rounded text-black"
-        />
-
-        <h2 className="font-semibold mb-2">{l.style}</h2>
-        {Object.entries(style).map(([key, value]) => (
-          <div key={key} className="mb-2">
-            <label className="block capitalize">{key}</label>
-            <input
-              type="range"
-              min={0}
-              max={5}
-              value={value}
-              onChange={(e) => handleSliderChange(key as keyof StyleSettings, parseInt(e.target.value))}
-              className="w-full"
-            />
-          </div>
-        ))}
-
-        <input
-          type="text"
-          placeholder={l.inStyleOf}
-          value={authorStyle}
-          onChange={(e) => setAuthorStyle(e.target.value)}
-          className="block w-full mb-4 p-2 rounded text-black"
-        />
-
         <button
           onClick={handleSubmit}
-          className="w-full py-3 bg-green-600 rounded text-xl font-bold disabled:opacity-50"
+          className="w-full py-3 bg-green-600 rounded text-xl font-bold disabled:opacity-50 mb-6"
           disabled={loading}
         >
-          {l.generate}
+          {generateLabel()}
         </button>
+
+        <details className="mb-4">
+          <summary className="font-semibold cursor-pointer">{l.addCharacter}</summary>
+          {characters.map((char, idx) => (
+            <div key={idx} className="mb-4 border-b border-gray-600 pb-2 mt-2">
+              <h2 className="font-semibold mb-2">{l.addCharacter} {idx + 1}</h2>
+              {(['name', 'age', 'gender', 'description', 'quirks'] as (keyof Character)[]).map((field) => (
+                <input
+                  key={field}
+                  type="text"
+                  placeholder={l[field]}
+                  value={char[field]}
+                  onChange={(e) => handleCharacterChange(idx, field, e.target.value)}
+                  className="block w-full mb-2 p-2 rounded text-black"
+                />
+              ))}
+            </div>
+          ))}
+          <button onClick={handleAddCharacter} className="px-4 py-2 bg-blue-600 rounded">
+            + {l.addCharacter}
+          </button>
+        </details>
+
+        <details className="mb-4">
+          <summary className="font-semibold cursor-pointer">{l.audience}</summary>
+          <textarea
+            placeholder={l.audience}
+            value={audience}
+            onChange={(e) => setAudience(e.target.value)}
+            className="block w-full mt-2 p-2 rounded text-black"
+          />
+        </details>
+
+        <details className="mb-4">
+          <summary className="font-semibold cursor-pointer">{l.synopsis}</summary>
+          <textarea
+            placeholder={l.synopsis}
+            value={synopsis}
+            onChange={(e) => setSynopsis(e.target.value)}
+            className="block w-full mt-2 p-2 rounded text-black"
+          />
+        </details>
+
+        <details className="mb-4">
+          <summary className="font-semibold cursor-pointer">{l.elements}</summary>
+          <textarea
+            placeholder={l.elements}
+            value={elements}
+            onChange={(e) => setElements(e.target.value)}
+            className="block w-full mt-2 p-2 rounded text-black"
+          />
+        </details>
+
+        <details className="mb-4">
+          <summary className="font-semibold cursor-pointer">{l.moral}</summary>
+          <textarea
+            placeholder={l.moral}
+            value={moral}
+            onChange={(e) => setMoral(e.target.value)}
+            className="block w-full mt-2 p-2 rounded text-black"
+          />
+        </details>
+
+        <details className="mb-4">
+          <summary className="font-semibold cursor-pointer">{l.style}</summary>
+          <div className="mt-2">
+            {Object.entries(style).map(([key, value]) => (
+              <div key={key} className="mb-2">
+                <label className="block capitalize">{key}</label>
+                <input
+                  type="range"
+                  min={0}
+                  max={5}
+                  value={value}
+                  onChange={(e) => handleSliderChange(key as keyof StyleSettings, parseInt(e.target.value))}
+                  className="w-full"
+                />
+              </div>
+            ))}
+            <input
+              type="text"
+              placeholder={l.inStyleOf}
+              value={authorStyle}
+              onChange={(e) => setAuthorStyle(e.target.value)}
+              className="block w-full mt-4 p-2 rounded text-black"
+            />
+          </div>
+        </details>
 
         {loading && <p className="mt-4 italic">{l.loading}</p>}
         {error && <p className="mt-4 text-red-300">{error}</p>}
