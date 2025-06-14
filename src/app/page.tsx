@@ -167,27 +167,33 @@ export default function Home() {
       className="min-h-screen bg-fixed bg-cover bg-top text-black"
       style={{ backgroundImage: `url(${typeof window !== 'undefined' && window.innerWidth > window.innerHeight ? '/backgroundls.png' : '/background.png'})` }}
     >
-      <div className="relative max-w-3xl mx-auto px-6 pt-8 pb-24 backdrop-blur-sm bg-white/50 rounded-xl mt-8 shadow-xl">
-        <div className="flex items-center gap-4 mb-4">
-          <img src="/logo.png" alt="Logo" className="h-32 w-32 object-contain" />
-          <div>
-            <h1 className="text-2xl font-bold">
-              {language === 'nl'
-                ? 'Genereer je eigen op maat gemaakte verhaaltjes met AI'
-                : 'Generate your tailormade tales with AI'}
-            </h1>
+      <div className="flex flex-col lg:flex-row gap-6 px-4 pt-8 pb-24 max-w-screen-xl mx-auto backdrop-blur-sm bg-white/50 rounded-xl mt-8 shadow-xl">
+        <section className="w-full lg:w-1/4 flex flex-col items-center text-center">
+        <img src="/logo.png" alt="Logo" className="h-32 w-32 object-contain mb-4" />
+        <h1 className="text-xl font-bold">
+          {language === 'nl'
+            ? 'Maak een verhaaltje op maat'
+            : 'Generate a custom tale'}
+        </h1>
+        <p className="text-sm italic text-gray-700 mt-2">
+          Laat alles leeg voor een verrassend verhaaltje of vul in wat jij belangrijk vindt.
+        </p>
 
-            <p className="text-sm italic text-gray-700">
-              Deze verhaaltjes zijn helemaal naar wens aan te passen. Laat alles leeg voor een verrassend willekeurig verhaaltje, of pas aan wat jij belangrijk vindt.
-            </p>
-          </div>
+        <div className="flex gap-2 mt-4">
+          <button onClick={() => setLanguage('nl')} className="px-4 py-1 bg-white text-black rounded border">NL</button>
+          <button onClick={() => setLanguage('en')} className="px-4 py-1 bg-white text-black rounded border">EN</button>
         </div>
-      
-      <div className="flex gap-2 mb-6">
-        <button onClick={() => setLanguage('nl')} className="px-4 py-1 bg-white text-black rounded">Nederlands</button>
-        <button onClick={() => setLanguage('en')} className="px-4 py-1 bg-white text-black rounded">English</button>
-      </div>
+      </section>
 
+      <section className="w-full lg:w-1/4 bg-white/30 rounded p-4 text-center">
+        <p className="italic text-gray-500">Blok 1 – Luisteraars</p>
+      </section>
+      <section className="w-full lg:w-1/4 bg-white/30 rounded p-4 text-center">
+        <p className="italic text-gray-500">Blok 2 – Personages</p>
+      </section>
+      <section className="w-full lg:w-1/4 bg-white/30 rounded p-4 text-center">
+        <p className="italic text-gray-500">Blok 3 – Verhaalstructuur</p>
+      </section>
 
         <button
           onClick={handleSubmit}
