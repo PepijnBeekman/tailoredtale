@@ -91,7 +91,6 @@ const placeholderConfig = {
 
 export default function Home() {
   const [language, setLanguage] = useState<'nl' | 'en'>('nl');
-  const [listeners, setListeners] = useState<Listener[]>([{ name: '', description: '' }]);
   const [characters, setCharacters] = useState<Character[]>([{ name: '', age: '', gender: '', description: '', quirks: '' }]);
   const [audience, setAudience] = useState('');
   const [elements, setElements] = useState('');
@@ -128,16 +127,6 @@ export default function Home() {
     const updated = [...characters];
     updated[index][field] = value;
     setCharacters(updated);
-  };
-
-  const handleAddListener = () => {
-  setListeners([...listeners, { name: '', description: '' }]);
-  };
-
-  const handleListenerChange = (index: number, field: keyof Listener, value: string) => {
-  const updated = [...listeners];
-  updated[index][field] = value;
-  setListeners(updated);
   };
 
   const handleSliderChange = (field: keyof StyleSettings, value: number) => {
@@ -201,30 +190,9 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="w-full lg:w-1/4 bg-white/30 rounded p-4">
-        <h2 className="font-semibold text-lg mb-2">Luisteraar(s)</h2>
-        {listeners.map((listener, idx) => (
-          <div key={idx} className="mb-4 border-b border-gray-300 pb-2">
-            <input
-              type="text"
-              placeholder="Naam (bijv. James)"
-              value={listener.name}
-              onChange={(e) => handleListenerChange(idx, 'name', e.target.value)}
-              className="block w-full mb-2 p-2 rounded text-black"
-            />
-            <textarea
-              placeholder="Bijv. een jongen van 7 die van Dragon Ball Z en voetbal houdt"
-              value={listener.description}
-              onChange={(e) => handleListenerChange(idx, 'description', e.target.value)}
-              className="block w-full p-2 rounded text-black"
-            />
-          </div>
-        ))}
-        <button onClick={handleAddListener} className="w-full py-2 mt-2 bg-blue-600 text-white rounded">
-          + Voeg luisteraar toe...
-        </button>
+      <section className="w-full lg:w-1/4 bg-white/30 rounded p-4 text-center">
+        <p className="italic text-gray-500">Blok 1 – Luisteraars</p>
       </section>
-
       <section className="w-full lg:w-1/4 bg-white/30 rounded p-4 text-center">
         <p className="italic text-gray-500">Blok 2 – Personages</p>
       </section>
