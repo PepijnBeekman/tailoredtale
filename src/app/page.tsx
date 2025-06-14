@@ -298,16 +298,17 @@ export default function Home() {
         {loading && <p className="mt-4 italic">Even geduld... het verhaaltje wordt geschreven...</p>}
         {error && <p className="mt-4 text-red-300">{error}</p>}
         {story && (
-          <div className="mt-6 relative w-full max-w-4xl mx-auto">
-            <img src="/book.png" alt="Boek" className="w-full h-auto" />
+          <div className="relative w-full max-w-md mx-auto aspect-square">
+            <img src="/scroll.png" alt="Scroll" className="w-full h-full object-contain" />
             <div
-              className="absolute top-[13%] left-[10%] w-[40%] h-[74%] overflow-y-auto p-4 text-black whitespace-pre-wrap text-lg story-font"
-              style={{ background: 'rgba(255,255,255,0.6)', borderRadius: '0.5rem' }}
+              className="absolute top-[17.5%] left-[17.5%] w-[65%] h-[65%] overflow-y-auto p-4 text-black whitespace-pre-wrap text-lg font-[var(--font-story)]"
+              style={{ background: 'transparent' }}
             >
               {story}
             </div>
           </div>
         )}
+
       </div> {/* sluit het interfaceblok af */}
     </main>
   );
