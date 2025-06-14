@@ -7,127 +7,37 @@ interface Listener {
   description: string;
 }
 
-interface Character {
+interface SimpleCharacter {
   name: string;
-  age: string;
-  gender: string;
   description: string;
-  quirks: string;
 }
-
-interface StyleSettings {
-  spannend: number;
-  grappig: number;
-  absurd: number;
-  leerzaam: number;
-  avontuurlijk: number;
-  inspirerend: number;
-}
-
-const placeholderConfig = {
-  nl: {
-    audience: {
-      label: 'Voor wie is dit verhaaltje bedoeld?',
-      helper: 'Vertel hier iets over degene voor wie het verhaaltje bedoeld is.',
-      placeholder: 'Bijv: een jongen van 7 die van draken houdt',
-    },
-    synopsis: {
-      label: 'Hier moet het over gaan:',
-      helper: 'Geef in 1-2 zinnen aan wat er in grote lijnen moet gebeuren.',
-      placeholder: 'Bijv: een prinses die leert om zelf haar problemen op te lossen',
-    },
-    moral: {
-      label: 'De boodschap moet zijn dat:',
-      helper: 'Welke les of inzicht moet de lezer meekrijgen?',
-      placeholder: 'Bijv: samenwerken loont altijd',
-    },
-    elements: {
-      label: 'Dit moet in verhaaltje voorkomen:',
-      helper: 'Noem losse elementen, dingen, wezens of gebeurtenissen.',
-      placeholder: 'Bijv: een eenhoorn, een regenboog, oma was jarig die dag',
-    },
-    character: {
-      label: 'Personage',
-      helper: 'Beschrijf een personage in het verhaal',
-      name: 'Naam (bijv: Hugo)',
-      age: 'Leeftijd (bijv: 5)',
-      gender: 'Geslacht (bijv: jongen)',
-      description: 'Korte beschrijving (bijv: nieuwsgierig en slim)',
-      quirks: 'Opmerkelijkheden (bijv: wiebelt met z’n tenen als hij nadenkt)',
-    },
-  },
-  en: {
-    audience: {
-      label: 'Who is this story intended for?',
-      helper: 'Tell us something about the listener or reader of this tale.',
-      placeholder: 'E.g.: a 7-year-old boy who loves dragons',
-    },
-    synopsis: {
-      label: 'The story should be about:',
-      helper: 'Describe in 1–2 sentences what should broadly happen.',
-      placeholder: 'E.g.: a princess who learns to solve problems herself',
-    },
-    moral: {
-      label: 'The message should be:',
-      helper: 'What lesson or insight should the listener take away?',
-      placeholder: 'E.g.: teamwork always pays off',
-    },
-    elements: {
-      label: 'These elements must be included in the tale:',
-      helper: 'List things, creatures, or events to include.',
-      placeholder: 'E.g.: a unicorn, a rainbow, and a cookie storm',
-    },
-    character: {
-      label: 'Character',
-      helper: 'Describe a character in the tale',
-      name: 'Name (e.g.: Hugo)',
-      age: 'Age (e.g.: 5)',
-      gender: 'Gender (e.g.: boy)',
-      description: 'Short description (e.g.: curious and clever)',
-      quirks: 'Quirks (e.g.: wiggles his toes when thinking)',
-    },
-  },
-};
 
 export default function Home() {
   const [language, setLanguage] = useState<'nl' | 'en'>('nl');
   const [listeners, setListeners] = useState<Listener[]>([{ name: '', description: '' }]);
-  const [characters, setCharacters] = useState<Character[]>([{ name: '', age: '', gender: '', description: '', quirks: '' }]);
-  const [audience, setAudience] = useState('');
+  const [simpleCharacters, setSimpleCharacters] = useState<SimpleCharacter[]>([{ name: '', description: '' },]);
+  const [storyLanguage, setStoryLanguage] = useState('');
   const [elements, setElements] = useState('');
   const [synopsis, setSynopsis] = useState('');
   const [moral, setMoral] = useState('');
-  const [style, setStyle] = useState<StyleSettings>({
-    spannend: 3,
-    grappig: 3,
-    absurd: 3,
-    leerzaam: 3,
-    avontuurlijk: 3,
-    inspirerend: 3,
-  });
   const [authorStyle, setAuthorStyle] = useState('');
   const [loading, setLoading] = useState(false);
   const [story, setStory] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  const t = placeholderConfig[language];
 
-  const generateLabel = () => {
-    const mainCharacter = characters.find((c) => c.name)?.name;
-    if (mainCharacter) return `Genereer verhaaltje over ${mainCharacter}`;
-    if (audience) return `Genereer verhaaltje voor ${audience}`;
-    if (synopsis) return `Genereer verhaaltje over ${synopsis}`;
-    return 'Genereer willekeurig verhaaltje';
+  const handleAddSimpleCharacter = () => {
+    setSimpleCharacters([...simpleCharacters, { name: '', description: '' }]);
   };
 
-  const handleAddCharacter = () => {
-    setCharacters([...characters, { name: '', age: '', gender: '', description: '', quirks: '' }]);
-  };
-
-  const handleCharacterChange = (index: number, field: keyof Character, value: string) => {
-    const updated = [...characters];
+  const handleSimpleCharacterChange = (
+    index: number,
+    field: keyof SimpleCharacter,
+    value: string
+  ) => {
+    const updated = [...simpleCharacters];
     updated[index][field] = value;
-    setCharacters(updated);
+    setSimpleCharacters(updated);
   };
 
   const handleAddListener = () => {
@@ -140,43 +50,40 @@ export default function Home() {
   setListeners(updated);
   };
 
-  const handleSliderChange = (field: keyof StyleSettings, value: number) => {
-    setStyle({ ...style, [field]: value });
-  };
-
   const handleSubmit = async () => {
-    setLoading(true);
-    setStory(null);
-    setError(null);
-    try {
-      const response = await fetch('/api/generate', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          language,
-          characters,
-          audience,
-          elements,
-          synopsis,
-          moral,
-          style,
-          authorStyle,
-        }),
-      });
+  setLoading(true);
+  setStory(null);
+  setError(null);
+  try {
+    const response = await fetch('/api/generate', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        language,
+        listeners,
+        simpleCharacters,
+        storyLanguage,
+        elements,
+        synopsis,
+        moral,
+        authorStyle,
+      }),
+    });
 
-      const data = await response.json();
-      if (data.story) {
-        setStory(data.story);
-      } else {
-        setError('Er ging iets mis. Probeer het opnieuw.');
-      }
-    } catch (err) {
-      console.error(err);
+    const data = await response.json();
+    if (data.story) {
+      setStory(data.story);
+    } else {
       setError('Er ging iets mis. Probeer het opnieuw.');
-    } finally {
-      setLoading(false);
     }
-  };
+  } catch (err) {
+    console.error(err);
+    setError('Er ging iets mis. Probeer het opnieuw.');
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   return (
     <main
@@ -225,118 +132,86 @@ export default function Home() {
         </button>
       </section>
 
-      <section className="w-full lg:w-1/4 bg-white/30 rounded p-4 text-center">
-        <p className="italic text-gray-500">Blok 2 – Personages</p>
+      <section className="w-full lg:w-1/4 bg-white/30 rounded p-4">
+        <h2 className="font-semibold text-lg mb-2">Personage(s)</h2>
+        {simpleCharacters.map((character, idx) => (
+          <div key={idx} className="mb-4 border-b border-gray-300 pb-2">
+            <input
+              type="text"
+              placeholder="Naam (bijv. Jax)"
+              value={character.name}
+              onChange={(e) => handleSimpleCharacterChange(idx, 'name', e.target.value)}
+              className="block w-full mb-2 p-2 rounded text-black"
+            />
+            <textarea
+              placeholder="Bijv. wereldkampioen schaakboksen met een litteken op zijn voorhoofd"
+              value={character.description}
+              onChange={(e) => handleSimpleCharacterChange(idx, 'description', e.target.value)}
+              className="block w-full p-2 rounded text-black"
+            />
+          </div>
+        ))}
+        <button
+          onClick={handleAddSimpleCharacter}
+          className="w-full py-2 mt-2 bg-blue-600 text-white rounded"
+        >
+          + Voeg personage toe...
+        </button>
       </section>
-      <section className="w-full lg:w-1/4 bg-white/30 rounded p-4 text-center">
-        <p className="italic text-gray-500">Blok 3 – Verhaalstructuur</p>
+
+      <section className="w-full lg:w-1/4 bg-white/30 rounded p-4">
+        <h2 className="font-semibold text-lg mb-2">Verhaalstructuur</h2>
+
+        <label className="block font-medium mt-2 mb-1">Verhaallijn</label>
+        <textarea
+          placeholder="Bijv. Jax gaat voor het eerst naar school en ontdekt een tijdmachine..."
+          value={synopsis}
+          onChange={(e) => setSynopsis(e.target.value)}
+          className="block w-full p-2 rounded text-black mb-3"
+        />
+
+        <label className="block font-medium mb-1">Details</label>
+        <textarea
+          placeholder="Bijv. het was een tropisch warme dag, oma was jarig, papa had net een nieuwe auto gekocht"
+          value={elements}
+          onChange={(e) => setElements(e.target.value)}
+          className="block w-full p-2 rounded text-black mb-3"
+        />
+
+        <label className="block font-medium mb-1">Boodschap</label>
+        <textarea
+          placeholder="Bijv. het leven kan magisch zijn als je de moed hebt om mensen in je hart toe te laten"
+          value={moral}
+          onChange={(e) => setMoral(e.target.value)}
+          className="block w-full p-2 rounded text-black mb-3"
+        />
+
+        <input
+          type="text"
+          placeholder="Stijlreferentie (bijv. Annie M.G. Schmidt)"
+          value={authorStyle}
+          onChange={(e) => setAuthorStyle(e.target.value)}
+          className="block w-full p-2 rounded text-black mb-3"
+        />
+
+        <input
+          type="text"
+          placeholder="Verhaaltje in deze taal (bijv. Twents, Klingon...)"
+          value={storyLanguage}
+          onChange={(e) => setStoryLanguage(e.target.value)}
+          className="block w-full p-2 rounded text-black"
+        />
       </section>
+
 
         <button
           onClick={handleSubmit}
           className="w-full py-3 bg-green-600 rounded text-xl font-bold disabled:opacity-50 mb-6"
           disabled={loading}
         >
-          {generateLabel()}
+          {loading ? 'Even geduld...' : 'Genereer verhaaltje'}
+
         </button>
-
-        {/* Characters */}
-        <details className="mb-4">
-          <summary className="font-semibold cursor-pointer">{t.character.label}</summary>
-          <p className="mt-2 text-sm text-gray-300">{t.character.helper}</p>
-          {characters.map((char, idx) => (
-            <div key={idx} className="mb-4 border-b border-gray-600 pb-2 mt-2">
-              {(['name', 'age', 'gender', 'description', 'quirks'] as (keyof Character)[]).map((field) => (
-                <input
-                  key={field}
-                  type="text"
-                  placeholder={t.character[field]}
-                  value={char[field]}
-                  onChange={(e) => handleCharacterChange(idx, field, e.target.value)}
-                  className="block w-full mb-2 p-2 rounded text-black"
-                />
-              ))}
-            </div>
-          ))}
-          <button onClick={handleAddCharacter} className="px-4 py-2 bg-blue-600 rounded">
-            + {t.character.label}
-          </button>
-        </details>
-
-        {/* Audience */}
-        <details className="mb-4">
-          <summary className="font-semibold cursor-pointer">{t.audience.label}</summary>
-          <p className="mt-2 text-sm text-gray-300">{t.audience.helper}</p>
-          <textarea
-            placeholder={t.audience.placeholder}
-            value={audience}
-            onChange={(e) => setAudience(e.target.value)}
-            className="block w-full mt-2 p-2 rounded text-black"
-          />
-        </details>
-
-        {/* Synopsis */}
-        <details className="mb-4">
-          <summary className="font-semibold cursor-pointer">{t.synopsis.label}</summary>
-          <p className="mt-2 text-sm text-gray-300">{t.synopsis.helper}</p>
-          <textarea
-            placeholder={t.synopsis.placeholder}
-            value={synopsis}
-            onChange={(e) => setSynopsis(e.target.value)}
-            className="block w-full mt-2 p-2 rounded text-black"
-          />
-        </details>
-
-        {/* Elements */}
-        <details className="mb-4">
-          <summary className="font-semibold cursor-pointer">{t.elements.label}</summary>
-          <p className="mt-2 text-sm text-gray-300">{t.elements.helper}</p>
-          <textarea
-            placeholder={t.elements.placeholder}
-            value={elements}
-            onChange={(e) => setElements(e.target.value)}
-            className="block w-full mt-2 p-2 rounded text-black"
-          />
-        </details>
-
-        {/* Moral */}
-        <details className="mb-4">
-          <summary className="font-semibold cursor-pointer">{t.moral.label}</summary>
-          <p className="mt-2 text-sm text-gray-300">{t.moral.helper}</p>
-          <textarea
-            placeholder={t.moral.placeholder}
-            value={moral}
-            onChange={(e) => setMoral(e.target.value)}
-            className="block w-full mt-2 p-2 rounded text-black"
-          />
-        </details>
-
-        {/* Style */}
-        <details className="mb-4">
-          <summary className="font-semibold cursor-pointer">Stijl</summary>
-          <div className="mt-2">
-            {Object.entries(style).map(([key, value]) => (
-              <div key={key} className="mb-2">
-                <label className="block capitalize">{key}</label>
-                <input
-                  type="range"
-                  min={0}
-                  max={5}
-                  value={value}
-                  onChange={(e) => handleSliderChange(key as keyof StyleSettings, parseInt(e.target.value))}
-                  className="w-full"
-                />
-              </div>
-            ))}
-            <input
-              type="text"
-              placeholder="In de stijl van (bijv: Annie M.G. Schmidt)"
-              value={authorStyle}
-              onChange={(e) => setAuthorStyle(e.target.value)}
-              className="block w-full mt-4 p-2 rounded text-black"
-            />
-          </div>
-        </details>
 
         {loading && <p className="mt-4 italic">Even geduld... het verhaaltje wordt geschreven...</p>}
         {error && <p className="mt-4 text-red-300">{error}</p>}

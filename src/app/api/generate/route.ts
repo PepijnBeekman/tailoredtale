@@ -2,33 +2,27 @@ import { NextRequest, NextResponse } from 'next/server';
 
 export const runtime = 'edge';
 
-type Character = {
+interface Listener {
   name: string;
-  age: string;
-  gender: string;
   description: string;
-  quirks: string;
-};
+}
 
-type StyleSettings = {
-  spannend: number;
-  grappig: number;
-  absurd: number;
-  leerzaam: number;
-  avontuurlijk: number;
-  inspirerend: number;
-};
+interface SimpleCharacter {
+  name: string;
+  description: string;
+}
 
 interface PromptInput {
   language: 'nl' | 'en';
-  characters: Character[];
-  audience: string;
+  listeners?: Listener[];             
+  simpleCharacters?: SimpleCharacter[]; 
+  storyLanguage?: string;             
   elements: string;
   synopsis: string;
   moral: string;
-  style: StyleSettings;
   authorStyle: string;
 }
+
 
 export async function POST(req: NextRequest) {
   try {
@@ -42,7 +36,7 @@ export async function POST(req: NextRequest) {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'gpt-4',
+        model: 'gpt-4o',
         messages: [
           { role: 'system', content: 'Je bent een creatieve, grappige en ontroerende verhalenverteller voor kinderen.' },
           { role: 'user', content: prompt },
@@ -63,27 +57,30 @@ export async function POST(req: NextRequest) {
 }
 
 function buildPrompt(data: PromptInput): string {
-  const charDescriptions = data.characters.map((c, i) =>
-    `Personage ${i + 1}: ${c.name}, ${c.age} jaar, ${c.gender}, ${c.description}, opvallend: ${c.quirks}.`
-  ).join('\n');
+  const lang = data.storyLanguage?.trim() || (data.language === 'en' ? 'English' : 'Nederlands');
+  const intro = `Schrijf een ${data.language === 'en' ? 'fun and original' : 'leuk en origineel'} voorleesverhaaltje in het ${lang}.`;
 
-  const sliders = Object.entries(data.style)
-    .map(([k, v]) => `${k}: ${v}/5`)
-    .join(', ');
+  const luisteraars = data.listeners?.length
+    ? `Het is bedoeld voor: ${data.listeners.map(l => `${l.name} (${l.description})`).join(', ')}.`
+    : '';
 
-  const langIntro = data.language === 'nl'
-    ? 'Schrijf een leuk, origineel Nederlandstalig voorleesverhaaltje.'
-    : 'Write a fun and original bedtime story in English.';
+  const personages = data.simpleCharacters?.length
+    ? `De hoofdpersonages zijn: ${data.simpleCharacters.map(p => `${p.name} (${p.description})`).join(', ')}.`
+    : '';
+
+  const stijl = data.authorStyle?.trim()
+    ? `Schrijf het in de stijl van ${data.authorStyle.trim()}.`
+    : '';
 
   return `
-${langIntro}
-Publiek: ${data.audience}
-${charDescriptions}
+${intro}
 
-Synopsis: ${data.synopsis}
-Elementen die erin moeten: ${data.elements}
+${luisteraars}
+${personages}
+
+Verhaallijn: ${data.synopsis}
+Details: ${data.elements}
 Boodschap: ${data.moral}
-Stijl: ${sliders}
-In de stijl van: ${data.authorStyle || '(geen voorkeur)'}
-`;
+${stijl}
+`.trim();
 }
