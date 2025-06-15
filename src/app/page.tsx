@@ -92,7 +92,7 @@ export default function Home() {
     >
       <div className="flex flex-col lg:flex-row gap-6 px-4 pt-8 pb-24 w-full max-w-none backdrop-blur-sm bg-white/50 rounded-xl mt-8 shadow-xl">
         <section className="w-full lg:w-1/4 flex flex-col items-center text-center">
-        <img src="/logo.png" alt="Logo" className="h-32 w-32 object-contain mb-4" />
+        <img src="/logo.png" alt="Logo" className="w-full max-w-[200px] object-contain mb-4" />
         <h1 className="text-xl font-bold">
           {language === 'nl'
             ? 'Maak een verhaaltje op maat'
@@ -119,6 +119,7 @@ export default function Home() {
               onChange={(e) => handleListenerChange(idx, 'name', e.target.value)}
               className="block w-full mb-2 p-2 rounded text-black"
             />
+            <label className="block text-sm font-medium mb-1">Omschrijving:</label>
             <textarea
               placeholder="Bijv. een jongen van 7 die van Dragon Ball Z en voetbal houdt"
               value={listener.description}
@@ -143,6 +144,7 @@ export default function Home() {
               onChange={(e) => handleSimpleCharacterChange(idx, 'name', e.target.value)}
               className="block w-full mb-2 p-2 rounded text-black"
             />
+            <label className="block text-sm font-medium mb-1">Omschrijving:</label>
             <textarea
               placeholder="Bijv. wereldkampioen schaakboksen met een litteken op zijn voorhoofd"
               value={character.description}
@@ -212,14 +214,18 @@ export default function Home() {
         
         
       </div> {/* sluit het interfaceblok af */}
-      
-      <button
+
+      <div className="w-full flex justify-center mt-8">
+        <button
           onClick={handleSubmit}
-          className="mx-auto mt-8 px-6 py-2 bg-green-600 rounded text-lg font-semibold disabled:opacity-50"
+          className="px-6 py-2 bg-green-600 rounded text-lg font-semibold disabled:opacity-50"
           disabled={loading}
         >
           {loading ? 'Even geduld...' : 'Genereer verhaaltje'}
         </button>
+      </div>
+
+
 
       {story && (
           <div className="relative w-full max-w-md md:max-w-2xl mx-auto aspect-[420/1024]">
