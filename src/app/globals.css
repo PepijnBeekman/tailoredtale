@@ -30,18 +30,19 @@ body {
 
 /* 📸 Achtergrond per aspect ratio */
 body {
-  background-image: url('/backgroundls.png');
+  background-image: url('/background.png'); /* standaard: portrait */
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
   overflow-y: auto;
 }
 
-@media (max-aspect-ratio: 3/4) {
+@media (min-aspect-ratio: 4/3) {
   body {
-    background-image: url('/background.png');
+    background-image: url('/backgroundls.png'); /* landscape */
   }
 }
+
 
 @keyframes fade-in {
   from { opacity: 0; transform: translateY(20px); }
