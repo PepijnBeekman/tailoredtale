@@ -37,9 +37,9 @@ body {
   overflow-y: auto;
 }
 
-@media (min-aspect-ratio: 3/4) {
+@media (orientation: landscape) {
   body {
-    background-image: url('/backgroundls.png'); /* landscape */
+    background-image: url('/backgroundls.png');
   }
 }
 
