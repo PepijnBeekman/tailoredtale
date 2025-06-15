@@ -24,6 +24,8 @@ export default function Home() {
   const [loading, setLoading] = useState(false);
   const [story, setStory] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [started, setStarted] = useState(false);
+
 
 
   const handleAddSimpleCharacter = () => {
@@ -85,11 +87,42 @@ export default function Home() {
 };
 
 
-  return (
-    <main
-      className="min-h-screen bg-fixed bg-cover bg-top text-black"
-      style={{ backgroundImage: `url(${typeof window !== 'undefined' && window.innerWidth > window.innerHeight ? '/backgroundls.png' : '/background.png'})` }}
-    >
+ return (
+  <main
+    className="min-h-screen bg-fixed bg-cover bg-top text-black"
+    style={{
+      backgroundImage:
+        typeof window !== 'undefined' && window.innerWidth > window.innerHeight
+          ? "url('/backgroundls.png')"
+          : "url('/background.png')",
+    }}
+  >
+    {!started && (
+      <div className="min-h-screen flex flex-col items-center justify-center text-center px-4">
+        <img src="/logo.png" alt="Logo" className="w-full max-w-[300px] object-contain mb-6" />
+        <p className="text-xl text-white max-w-xl mb-6">
+          Welkom bij Tailored Tale. Hier maak je in een paar klikken je eigen magische voorleesverhaaltje.
+        </p>
+        <button
+          onClick={() => setStarted(true)}
+          className="px-6 py-3 bg-white text-black rounded text-lg font-semibold shadow-md hover:scale-105 transition-transform"
+        >
+          Begin
+        </button>
+      </div>
+    )}
+
+    {started && (
+      <>
+
+
+          
+        
+      {started && (
+        <div className="flex flex-col lg:flex-row gap-6 px-4 pt-8 pb-24 w-full max-w-none backdrop-blur-sm bg-white/50 rounded-xl mt-8 shadow-xl animate-fade-in">
+
+
+
       <div className="flex flex-col lg:flex-row gap-6 px-4 pt-8 pb-24 w-full max-w-none backdrop-blur-sm bg-white/50 rounded-xl mt-8 shadow-xl">
         <section className="w-full lg:w-1/4 flex flex-col items-center text-center">
         <img src="/logo.png" alt="Logo" className="w-full max-w-[200px] object-contain mb-4" />
@@ -214,6 +247,8 @@ export default function Home() {
         
         
       </div> {/* sluit het interfaceblok af */}
+   </div>
+    )}
 
       <div className="w-full flex justify-center mt-8">
         <button
@@ -228,7 +263,7 @@ export default function Home() {
 
 
       {story && (
-          <div className="relative w-full max-w-md md:max-w-2xl mx-auto aspect-[420/1024]">
+          <div className="relative w-full max-w-md md:max-w-2xl mx-auto aspect-[420/1024] mt-12">
             <img src="/scroll.png" alt="Scroll" className="w-full h-full object-contain" />
             <div
               className="absolute top-[7.8%] left-[6.9%] w-[86.2%] h-[84.4%] overflow-y-auto p-4 text-black whitespace-pre-wrap text-lg font-[var(--font-story)] story-font"
@@ -238,7 +273,9 @@ export default function Home() {
             </div>
           </div>
         )}
-    </main>
-  );
+      </>
+    )}
+  </main>
+);
 }
 
