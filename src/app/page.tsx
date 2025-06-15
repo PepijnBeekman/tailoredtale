@@ -90,7 +90,7 @@ export default function Home() {
       className="min-h-screen bg-fixed bg-cover bg-top text-black"
       style={{ backgroundImage: `url(${typeof window !== 'undefined' && window.innerWidth > window.innerHeight ? '/backgroundls.png' : '/background.png'})` }}
     >
-      <div className="flex flex-col lg:flex-row gap-6 px-4 pt-8 pb-24 max-w-screen-xl mx-auto backdrop-blur-sm bg-white/50 rounded-xl mt-8 shadow-xl">
+      <div className="flex flex-col lg:flex-row gap-6 px-4 pt-8 pb-24 w-full max-w-none backdrop-blur-sm bg-white/50 rounded-xl mt-8 shadow-xl">
         <section className="w-full lg:w-1/4 flex flex-col items-center text-center">
         <img src="/logo.png" alt="Logo" className="h-32 w-32 object-contain mb-4" />
         <h1 className="text-xl font-bold">
@@ -123,7 +123,7 @@ export default function Home() {
               placeholder="Bijv. een jongen van 7 die van Dragon Ball Z en voetbal houdt"
               value={listener.description}
               onChange={(e) => handleListenerChange(idx, 'description', e.target.value)}
-              className="block w-full p-2 rounded text-black"
+              className="block w-full p-2 rounded text-black placeholder:text-sm placeholder:italic"
             />
           </div>
         ))}
@@ -147,7 +147,7 @@ export default function Home() {
               placeholder="Bijv. wereldkampioen schaakboksen met een litteken op zijn voorhoofd"
               value={character.description}
               onChange={(e) => handleSimpleCharacterChange(idx, 'description', e.target.value)}
-              className="block w-full p-2 rounded text-black"
+              className="block w-full p-2 rounded text-black placeholder:text-sm placeholder:italic"
             />
           </div>
         ))}
@@ -167,7 +167,7 @@ export default function Home() {
           placeholder="Bijv. Jax gaat voor het eerst naar school en ontdekt een tijdmachine..."
           value={synopsis}
           onChange={(e) => setSynopsis(e.target.value)}
-          className="block w-full p-2 rounded text-black mb-3"
+          className="block w-full p-2 rounded text-black placeholder:text-sm placeholder:italic"
         />
 
         <label className="block font-medium mb-1">Details</label>
@@ -175,7 +175,7 @@ export default function Home() {
           placeholder="Bijv. het was een tropisch warme dag, oma was jarig, papa had net een nieuwe auto gekocht"
           value={elements}
           onChange={(e) => setElements(e.target.value)}
-          className="block w-full p-2 rounded text-black mb-3"
+          className="block w-full p-2 rounded text-black placeholder:text-sm placeholder:italic"
         />
 
         <label className="block font-medium mb-1">Boodschap</label>
@@ -183,7 +183,7 @@ export default function Home() {
           placeholder="Bijv. het leven kan magisch zijn als je de moed hebt om mensen in je hart toe te laten"
           value={moral}
           onChange={(e) => setMoral(e.target.value)}
-          className="block w-full p-2 rounded text-black mb-3"
+          className="block w-full p-2 rounded text-black placeholder:text-sm placeholder:italic"
         />
 
         <input
@@ -204,18 +204,24 @@ export default function Home() {
       </section>
 
 
-        <button
-          onClick={handleSubmit}
-          className="w-full py-3 bg-green-600 rounded text-xl font-bold disabled:opacity-50 mb-6"
-          disabled={loading}
-        >
-          {loading ? 'Even geduld...' : 'Genereer verhaaltje'}
+        
 
-        </button>
 
         {loading && <p className="mt-4 italic">Even geduld... het verhaaltje wordt geschreven...</p>}
         {error && <p className="mt-4 text-red-300">{error}</p>}
-        {story && (
+        
+        
+      </div> {/* sluit het interfaceblok af */}
+      
+      <button
+          onClick={handleSubmit}
+          className="mx-auto mt-8 px-6 py-2 bg-green-600 rounded text-lg font-semibold disabled:opacity-50"
+          disabled={loading}
+        >
+          {loading ? 'Even geduld...' : 'Genereer verhaaltje'}
+        </button>
+
+      {story && (
           <div className="relative w-full max-w-md md:max-w-2xl mx-auto aspect-[420/1024]">
             <img src="/scroll.png" alt="Scroll" className="w-full h-full object-contain" />
             <div
@@ -226,9 +232,6 @@ export default function Home() {
             </div>
           </div>
         )}
-
-
-      </div> {/* sluit het interfaceblok af */}
     </main>
   );
 }
