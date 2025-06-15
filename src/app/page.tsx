@@ -99,7 +99,7 @@ export default function Home() {
             : 'Generate a custom tale'}
         </h1>
         <p className="text-sm italic text-gray-700 mt-2">
-          Laat alles leeg voor een verrassend verhaaltje of vul in wat jij belangrijk vindt.
+          Vul in wat je wil (alles optioneel) en genereer je eigen unieke voorleesverhaaltje!
         </p>
 
         <div className="flex gap-2 mt-4">
